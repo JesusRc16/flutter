@@ -236,6 +236,7 @@ class AssembleCommand extends FlutterCommand {
           .childDirectory('.dart_tool')
           .childDirectory('flutter_build'),
       projectDir: _flutterProject.directory,
+      packageConfigPath: packageConfigPath(),
       defines: _parseDefines(stringsArg('define')),
       inputs: _parseDefines(stringsArg('input')),
       cacheDir: globals.cache.getRoot(),
@@ -308,6 +309,14 @@ class AssembleCommand extends FlutterCommand {
         'Error parsing assemble command: your generated configuration may be out of date. '
         "Try re-running 'flutter build ios' or the appropriate build command."
       );
+    }
+    if (deferredTargets.isNotEmpty) {
+      // Record to analytics that DeferredComponents is being used.
+      globals.analytics.send(Event.flutterBuildInfo(
+        label: 'assemble-deferred-components',
+        buildType: 'android',
+        settings: deferredTargets.map((Target t) => t.name).join(','),
+      ));
     }
     if (_flutterProject.manifest.deferredComponents != null
         && decodedDefines.contains('validate-deferred-components=true')

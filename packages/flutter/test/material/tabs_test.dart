@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file is run as part of a reduced test set in CI on Mac and Windows
+// machines.
+@Tags(<String>['reduced-test-set'])
+library;
+
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +24,7 @@ Widget boilerplate({
   Widget? child,
   TextDirection textDirection = TextDirection.ltr,
   ThemeData? theme,
-  TabBarTheme? tabBarTheme,
+  TabBarThemeData? tabBarTheme,
   bool? useMaterial3,
 }) {
   return Theme(
@@ -49,7 +56,7 @@ Widget buildFrame({
   EdgeInsetsGeometry? padding,
   TextDirection textDirection = TextDirection.ltr,
   TabAlignment? tabAlignment,
-  TabBarTheme? tabBarTheme,
+  TabBarThemeData? tabBarTheme,
   Decoration? indicator,
   bool? useMaterial3,
 }) {
@@ -2454,7 +2461,7 @@ void main() {
     expect(tester.getTopRight(find.widgetWithText(Tab, 'TAB #19')).dx, moreOrLessEquals(tabRight));
   });
 
-  testWidgets('Material3 - Indicator stretch animation', (WidgetTester tester) async {
+  testWidgets('Indicator elastic animation', (WidgetTester tester) async {
     const double indicatorWidth = 50.0;
     final List<Widget> tabs = List<Widget>.generate(4, (int index) {
       return Tab(
@@ -2483,35 +2490,45 @@ void main() {
 
     final RenderBox tabBarBox = tester.firstRenderObject<RenderBox>(find.byType(TabBar));
     expect(tabBarBox.size.height, 48.0);
-    final double tabWidth = tabBarBox.size.width / tabs.length;
 
-    void expectIndicatorAttrs(RenderBox tabBarBox, {required double offset, required double width}) {
-      const double indicatorWeight = 3.0;
-      final double centerX = offset * tabWidth + tabWidth / 2;
-      final RRect rrect = RRect.fromLTRBAndCorners(
-        centerX - width / 2,
-        tabBarBox.size.height - indicatorWeight,
-        centerX + width / 2,
-        tabBarBox.size.height,
-        topLeft: const Radius.circular(3.0),
-        topRight: const Radius.circular(3.0),
-      );
+    const Rect currentRect = Rect.fromLTRB(75.0, 0.0, 125.0, 48.0);
+    const Rect fromRect = Rect.fromLTRB(75.0, 0.0, 125.0, 48.0);
+    Rect toRect = const Rect.fromLTRB(75.0, 0.0, 125.0, 48.0);
+    expect(
+      tabBarBox,
+      paints..rrect(
+        rrect: tabIndicatorRRectElasticAnimation(tabBarBox, currentRect, fromRect, toRect, 0.0),
+      ),
+    );
 
-      expect(tabBarBox, paints..rrect(rrect: rrect));
-    }
-
-    // Idle at tab 0.
-    expectIndicatorAttrs(tabBarBox, offset: 0.0, width: indicatorWidth);
-
-    // Peak stretch at 20%.
     controller.offset = 0.2;
     await tester.pump();
-    expectIndicatorAttrs(tabBarBox, offset: 0.2, width: indicatorWidth * 2);
+    toRect = const Rect.fromLTRB(275.0, 0.0, 325.0, 48.0);
+    expect(
+      tabBarBox,
+      paints..rrect(
+        rrect: tabIndicatorRRectElasticAnimation(tabBarBox, currentRect, fromRect, toRect, 0.2),
+      ),
+    );
 
-    // Idle at tab 1.
+    controller.offset = 0.5;
+    await tester.pump();
+    expect(
+      tabBarBox,
+      paints..rrect(
+        rrect: tabIndicatorRRectElasticAnimation(tabBarBox, currentRect, fromRect, toRect, 0.5),
+      ),
+    );
+
     controller.offset = 1;
     await tester.pump();
-    expectIndicatorAttrs(tabBarBox, offset: 1, width: indicatorWidth);
+    // When the animation is completed, no stretch is applied.
+    expect(
+      tabBarBox,
+      paints..rrect(
+        rrect: tabIndicatorRRectElasticAnimation(tabBarBox, currentRect, fromRect, toRect, 1.0),
+      ),
+    );
   });
 
   testWidgets('TabBar with indicatorWeight, indicatorPadding (LTR)', (WidgetTester tester) async {
@@ -3454,15 +3471,20 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(tabBarBox, paints..line(
-      strokeWidth: indicatorWeight,
-      p1: const Offset(4951.0, indicatorY),
-      p2: const Offset(5049.0, indicatorY),
-    ));
+    expect(
+      tabBarBox,
+      paints..line(
+        strokeWidth: indicatorWeight,
+        // In RTL, the elastic tab animation expands the width of the tab with a negative offset
+        // when jumping from the first tab to the last tab in a scrollable tab bar.
+        p1: const Offset(-480149, indicatorY),
+        p2: const Offset(-480051, indicatorY),
+      ),
+    );
 
     await tester.pump(const Duration(milliseconds: 501));
 
-    // Tab 99 out of 100 selected, appears on the far left because RTL
+    // Tab 99 out of 100 selected, appears on the far left because RTL.
     indicatorLeft = indicatorWeight / 2.0;
     indicatorRight = 100.0 - indicatorWeight / 2.0;
     expect(tabBarBox, paints..line(
@@ -5515,7 +5537,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData(
-          tabBarTheme: const TabBarTheme(labelPadding: labelPadding),
+          tabBarTheme: const TabBarThemeData(labelPadding: labelPadding),
         ),
         home: Scaffold(
           appBar: AppBar(
@@ -5836,7 +5858,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData.light().copyWith(
-          tabBarTheme: TabBarTheme(
+          tabBarTheme: TabBarThemeData(
             splashFactory: splashFactory,
             overlayColor: overlayColor,
           )),
@@ -5924,6 +5946,55 @@ void main() {
       ),
     );
     gesture.removePointer();
+  });
+
+  testWidgets('No crash if TabBar build called before didUpdateWidget with SliverAppBar', (WidgetTester tester) async {
+    // Regression test for https://github.com/flutter/flutter/issues/154484.
+    final List<String> tabs = <String>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return DefaultTabController(
+              length: tabs.length,
+              child: Scaffold(
+                body: CustomScrollView(
+                  slivers: <Widget>[
+                    SliverAppBar(
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Add Tab'),
+                          onPressed: () {
+                            setState(() {
+                              tabs.add('Tab ${tabs.length + 1}');
+                            });
+                          },
+                        ),
+                      ],
+                      bottom: TabBar(
+                        tabs: tabs.map((String tab) => Tab(text: tab)).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    // Initializes with zero tabs.
+    expect(find.text('Tab 1'), findsNothing);
+    expect(find.text('Tab 2'), findsNothing);
+
+    // No crash after tabs added.
+    await tester.tap(find.text('Add Tab'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tab 1'), findsOneWidget);
+    expect(find.text('Tab 2'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Do not crash if the controller and TabBarView are updated at different phases(build and layout) of the same frame', (WidgetTester tester) async {
@@ -6484,7 +6555,7 @@ void main() {
       MaterialApp(
         theme: ThemeData(
           useMaterial3: true,
-          tabBarTheme: const TabBarTheme(dividerColor: dividerColor),
+          tabBarTheme: const TabBarThemeData(dividerColor: dividerColor),
         ),
         home: Scaffold(
           appBar: AppBar(
@@ -6513,7 +6584,7 @@ void main() {
       MaterialApp(
         theme: ThemeData(
           useMaterial3: true,
-          tabBarTheme: const TabBarTheme(dividerColor: dividerColor),
+          tabBarTheme: const TabBarThemeData(dividerColor: dividerColor),
         ),
         home: Scaffold(
           body: DefaultTabController(
@@ -6765,7 +6836,7 @@ void main() {
       const String unSelectedValue = 'C';
       const Color labelColor = Color(0xff0000ff);
       await tester.pumpWidget(
-        buildFrame(tabs: tabs, value: selectedValue, useMaterial3: false, tabBarTheme: const TabBarTheme(labelColor: labelColor)),
+        buildFrame(tabs: tabs, value: selectedValue, useMaterial3: false, tabBarTheme: const TabBarThemeData(labelColor: labelColor)),
       );
       expect(find.text('A'), findsOneWidget);
       expect(find.text('B'), findsOneWidget);
@@ -7273,4 +7344,348 @@ void main() {
     ));
     expect(tester.getSize(find.byType(TabBar)).width, 800.0);
   });
+
+  testWidgets('TabBar.indicatorAnimation can customize tab indicator animation', (WidgetTester tester) async {
+    const double indicatorWidth = 50.0;
+    final List<Widget> tabs = List<Widget>.generate(4, (int index) {
+      return Tab(
+        key: ValueKey<int>(index),
+        child: const SizedBox(width: indicatorWidth),
+      );
+    });
+
+    final TabController controller = createTabController(
+      vsync: const TestVSync(),
+      length: tabs.length,
+    );
+
+    Widget buildTab({ TabIndicatorAnimation? indicatorAnimation }) {
+      return MaterialApp(
+        home: boilerplate(
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: TabBar(
+              indicatorAnimation: indicatorAnimation,
+              controller: controller,
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Test tab indicator animation with TabIndicatorAnimation.linear.
+    await tester.pumpWidget(buildTab(indicatorAnimation: TabIndicatorAnimation.linear));
+
+    final RenderBox tabBarBox = tester.firstRenderObject<RenderBox>(find.byType(TabBar));
+
+    // Idle at tab 0.
+    expect(
+      tabBarBox,
+      paints..rrect(rrect: RRect.fromLTRBAndCorners(
+        75.0, 45.0, 125.0, 48.0,
+        topLeft: const Radius.circular(3.0),
+        topRight: const Radius.circular(3.0),
+      ),
+    ));
+
+    // Start moving tab indicator.
+    controller.offset = 0.2;
+    await tester.pump();
+
+    expect(
+      tabBarBox,
+      paints..rrect(rrect: RRect.fromLTRBAndCorners(
+        115.0, 45.0, 165.0, 48.0,
+        topLeft: const Radius.circular(3.0),
+        topRight: const Radius.circular(3.0),
+      ),
+    ));
+
+    // Reset tab controller offset.
+    controller.offset = 0.0;
+
+    // Test tab indicator animation with TabIndicatorAnimation.elastic.
+    await tester.pumpWidget(buildTab(indicatorAnimation: TabIndicatorAnimation.elastic));
+    await tester.pumpAndSettle();
+
+    // Idle at tab 0.
+    const Rect currentRect = Rect.fromLTRB(75.0, 0.0, 125.0, 48.0);
+    const Rect fromRect = Rect.fromLTRB(75.0, 0.0, 125.0, 48.0);
+    Rect toRect = const Rect.fromLTRB(75.0, 0.0, 125.0, 48.0);
+    expect(
+      tabBarBox,
+      paints..rrect(
+        rrect: tabIndicatorRRectElasticAnimation(tabBarBox, currentRect, fromRect, toRect, 0.0),
+      ),
+    );
+
+    controller.offset = 0.2;
+    await tester.pump();
+    toRect = const Rect.fromLTRB(275.0, 0.0, 325.0, 48.0);
+    expect(
+      tabBarBox,
+      paints..rrect(
+        rrect: tabIndicatorRRectElasticAnimation(tabBarBox, currentRect, fromRect, toRect, 0.2),
+      ),
+    );
+  });
+
+  testWidgets('Elastic Tab animation with various size tabs - LTR', (WidgetTester tester) async {
+    final AnimationSheetBuilder animationSheet = AnimationSheetBuilder(
+      frameSize: const Size(800, 100),
+    );
+    addTearDown(animationSheet.dispose);
+
+    final List<Widget> tabs = <Widget>[
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+    ];
+
+    final TabController controller = createTabController(
+      vsync: const TestVSync(),
+      length: tabs.length,
+    );
+
+    Widget target() {
+      return animationSheet.record(
+        boilerplate(
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: TabBar(
+              indicatorAnimation: TabIndicatorAnimation.elastic,
+              controller: controller,
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpFrames(target(), const Duration(milliseconds: 50));
+
+    await tester.tap(find.text('Extremely Very Long Label'));
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await tester.tap(find.text('C'));
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await expectLater(
+      animationSheet.collate(1),
+      matchesGoldenFile('tab_indicator.elastic_animation.various_size_tabs.ltr.png'),
+    );
+  }, skip: isBrowser); // https://github.com/flutter/flutter/issues/56001
+
+  testWidgets('Elastic Tab animation with various size tabs in a scrollable tab bar - LTR', (
+    WidgetTester tester,
+  ) async {
+    final AnimationSheetBuilder animationSheet = AnimationSheetBuilder(
+      frameSize: const Size(800, 100),
+    );
+    addTearDown(animationSheet.dispose);
+
+    final List<Widget> tabs = <Widget>[
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+    ];
+
+    final TabController controller = createTabController(
+      vsync: const TestVSync(),
+      length: tabs.length,
+    );
+
+    Widget target() {
+      return animationSheet.record(
+        boilerplate(
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: TabBar(
+              indicatorAnimation: TabIndicatorAnimation.elastic,
+              isScrollable: true,
+              controller: controller,
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpFrames(target(), const Duration(milliseconds: 50));
+
+    controller.animateTo(tabs.length - 1);
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    controller.animateTo(0);
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await expectLater(
+      animationSheet.collate(1),
+      matchesGoldenFile('tab_indicator.elastic_animation.various_size_tabs.scrollable.ltr.png'),
+    );
+  }, skip: isBrowser); // https://github.com/flutter/flutter/issues/56001
+
+  testWidgets('Elastic Tab animation with various size tabs - RTL', (WidgetTester tester) async {
+    final AnimationSheetBuilder animationSheet = AnimationSheetBuilder(
+      frameSize: const Size(800, 100),
+    );
+    addTearDown(animationSheet.dispose);
+
+    final List<Widget> tabs = <Widget>[
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+    ];
+
+    final TabController controller = createTabController(
+      vsync: const TestVSync(),
+      length: tabs.length,
+    );
+
+    Widget target() {
+      return animationSheet.record(
+        boilerplate(
+          textDirection: TextDirection.rtl,
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: TabBar(
+              indicatorAnimation: TabIndicatorAnimation.elastic,
+              controller: controller,
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpFrames(target(), const Duration(milliseconds: 50));
+
+    await tester.tap(find.text('Extremely Very Long Label'));
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await tester.tap(find.text('C'));
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await expectLater(
+      animationSheet.collate(1),
+      matchesGoldenFile('tab_indicator.elastic_animation.various_size_tabs.rtl.png'),
+    );
+  }, skip: isBrowser); // https://github.com/flutter/flutter/issues/56001
+
+  testWidgets('Elastic Tab animation with various size tabs in a scrollable tab bar - RTL', (
+    WidgetTester tester,
+  ) async {
+    final AnimationSheetBuilder animationSheet = AnimationSheetBuilder(
+      frameSize: const Size(800, 100),
+    );
+    addTearDown(animationSheet.dispose);
+
+    final List<Widget> tabs = <Widget>[
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+    ];
+
+    final TabController controller = createTabController(
+      vsync: const TestVSync(),
+      length: tabs.length,
+    );
+
+    Widget target() {
+      return animationSheet.record(
+        boilerplate(
+          textDirection: TextDirection.rtl,
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: TabBar(
+              indicatorAnimation: TabIndicatorAnimation.elastic,
+              isScrollable: true,
+              controller: controller,
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpFrames(target(), const Duration(milliseconds: 50));
+
+    controller.animateTo(tabs.length - 1);
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    controller.animateTo(0);
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await expectLater(
+      animationSheet.collate(1),
+      matchesGoldenFile('tab_indicator.elastic_animation.various_size_tabs.scrollable.rtl.png'),
+    );
+  }, skip: isBrowser); // https://github.com/flutter/flutter/issues/56001
+
+  // Regression test for https://github.com/flutter/flutter/issues/160631
+  testWidgets('Elastic Tab animation when skipping tabs', (WidgetTester tester) async {
+    final AnimationSheetBuilder animationSheet = AnimationSheetBuilder(
+      frameSize: const Size(800, 100),
+    );
+    addTearDown(animationSheet.dispose);
+
+    final List<Widget> tabs = <Widget>[
+      const Tab(text: 'Medium'),
+      const Tab(text: 'Extremely Very Long Label'),
+      const Tab(text: 'C'),
+      const Tab(text: 'Short'),
+    ];
+
+    final TabController controller = createTabController(
+      vsync: const TestVSync(),
+      length: tabs.length,
+    );
+
+    Widget target() {
+      return animationSheet.record(
+        boilerplate(
+          child: Container(
+            alignment: Alignment.topLeft,
+            child: TabBar(
+              indicatorAnimation: TabIndicatorAnimation.elastic,
+              controller: controller,
+              tabs: tabs,
+            ),
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpFrames(target(), const Duration(milliseconds: 50));
+
+    await tester.tap(find.text('C'));
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await tester.tap(find.text('Medium'));
+    await tester.pumpFrames(target(), const Duration(milliseconds: 500));
+
+    await expectLater(
+      animationSheet.collate(1),
+      matchesGoldenFile('tab_indicator.elastic_animation.skipping_tabs.png'),
+    );
+  }, skip: isBrowser); // https://github.com/flutter/flutter/issues/56001
 }
