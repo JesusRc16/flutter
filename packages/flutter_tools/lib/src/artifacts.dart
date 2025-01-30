@@ -189,7 +189,11 @@ String? _artifactToFileName(Artifact artifact, Platform hostPlatform, [ BuildMod
 =======
     case Artifact.flutterFrameworkDsym:
       return 'Flutter.framework.dSYM';
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     case Artifact.flutterXcframework:
       return 'Flutter.xcframework';
     case Artifact.flutterMacOSFramework:
@@ -1023,7 +1027,11 @@ String _getMacOSEngineArtifactPath(
 /// `FlutterMacOS.framework.dSYM` bundles for that target architecture. At present,
 /// there is only one such directory: `macos-arm64_x86_64`.
 Directory _getMacOSFrameworkPlatformDirectory(
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
   String engineDirectory,
   FileSystem fileSystem,
   Platform hostPlatform,

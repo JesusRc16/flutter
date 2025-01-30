@@ -162,7 +162,11 @@ class WasmCompilerConfig extends WebCompilerConfig {
 =======
       if (!sourceMaps) '--no-source-maps',
       if (buildMode == BuildMode.debug) '--extra-compiler-option=--enable-asserts',
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     ];
   }
 

@@ -32,7 +32,11 @@ const String templateAndroidGradlePluginVersion = '8.1.0';
 const String templateAndroidGradlePluginVersionForModule = '7.3.0';
 =======
 const String templateAndroidGradlePluginVersionForModule = '8.1.0';
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
 const String templateKotlinGradlePluginVersion = '1.8.22';
 
 // The Flutter Gradle Plugin is only applied to app projects, and modules that

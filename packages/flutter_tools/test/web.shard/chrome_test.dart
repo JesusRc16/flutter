@@ -935,7 +935,11 @@ void main() {
   test('Chromium close handles a SocketException when connecting to Chrome', () async {
 =======
   testWithoutContext('Chromium close handles a SocketException when connecting to Chrome', () async {
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     final BufferLogger logger = BufferLogger.test();
     final FakeChromeConnectionWithTab chromeConnection = FakeChromeConnectionWithTab();
     final ChromiumLauncher chromiumLauncher = ChromiumLauncher(
@@ -971,7 +975,11 @@ void main() {
     expect(await chromiumLauncher.connect(chrome, false), equals(chrome));
     await chrome.close();
   });
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
 }
 
 /// Fake chrome connection that fails to get tabs a few times.
@@ -1026,7 +1034,11 @@ class FakeChromeConnectionWithTab extends Fake implements ChromeConnection {
     this.onGetTab,
     bool throwWebSocketException = false,
   }) : _tab = FakeChromeTab(onSendCommand, throwWebSocketException);
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
 
   final FakeChromeTab _tab;
   void Function()? onGetTab;

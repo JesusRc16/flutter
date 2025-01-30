@@ -428,7 +428,11 @@ targets:
 <<<<<<< HEAD
     bringup: true
 =======
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     recipe: devicelab/devicelab_drone
     timeout: 60
     properties:
@@ -452,7 +456,11 @@ targets:
   - name: Linux build_tests_1_3
 =======
   - name: Linux build_tests_1_5
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     recipe: flutter/flutter_drone
     timeout: 60
     properties:
@@ -1355,7 +1363,11 @@ targets:
 <<<<<<< HEAD
     bringup: true
 =======
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     timeout: 60
     properties:
       add_recipes_cq: "true"
@@ -1369,7 +1381,11 @@ targets:
           {"dependency": "goldctl", "version": "git_revision:720a542f6fe4f92922c3b8f0fdcc4d2ac6bb83cd"},
 =======
           {"dependency": "goldctl", "version": "git_revision:2387d6fff449587eecbb7e45b2692ca0710b63b9"},
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
           {"dependency": "ninja", "version": "version:1.9.0"},
           {"dependency": "open_jdk", "version": "version:11"}
         ]
@@ -1419,7 +1435,11 @@ targets:
         ["devicelab", "hostonly", "linux"]
       test_timeout_secs: "2700"
 
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
   - name: Linux tool_tests_commands
     recipe: flutter/flutter_drone
     timeout: 60

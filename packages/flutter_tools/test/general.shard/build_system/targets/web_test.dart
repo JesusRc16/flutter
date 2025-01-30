@@ -1023,7 +1023,11 @@ void main() {
           for (final String buildMode in const <String>['profile', 'release']) {
 =======
           for (final String buildMode in const <String>['profile', 'release', 'debug']) {
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
             for (final bool sourceMaps in const <bool>[true, false]) {
               test('Dart2WasmTarget invokes dart2wasm with renderer=$renderer, -O$level, stripping=$strip, defines=$defines, modeMode=$buildMode sourceMaps=$sourceMaps', () => testbed.run(() async {
                 environment.defines[kBuildMode] = buildMode;
@@ -1043,7 +1047,11 @@ void main() {
                       '--extra-compiler-option=--delete-tostring-package-uri=dart:ui',
                       '--extra-compiler-option=--delete-tostring-package-uri=package:flutter',
                     ],
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
                     if (renderer == WebRendererMode.skwasm) ...<String>[
                       '--extra-compiler-option=--import-shared-memory',
                       '--extra-compiler-option=--shared-memory-max-pages=32768',
@@ -1051,7 +1059,11 @@ void main() {
 <<<<<<< HEAD
                     '-Ddart.vm.${buildMode == 'release' ? 'product' : 'profile' }=true',
 =======
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
                     ...defines.map((String define) => '-D$define'),
                     if (renderer == WebRendererMode.skwasm) ...<String>[
                       '-DFLUTTER_WEB_AUTO_DETECT=false',
@@ -1071,7 +1083,11 @@ void main() {
 =======
                     if (!sourceMaps) '--no-source-maps',
                     if (buildMode == 'debug') '--extra-compiler-option=--enable-asserts',
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
                     '-o',
                     environment.buildDir.childFile('main.dart.wasm').absolute.path,
                     environment.buildDir.childFile('main.dart').absolute.path,

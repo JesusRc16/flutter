@@ -67,7 +67,11 @@ import '../src/context.dart';
 // This test requires Java 11 due to the intentionally low version of Gradle.
 // It also overrides the template compile sdk version to 34, because using 35
 // requires AGP 8.0+.
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
 void main() {
   late Directory tempDir;
 
@@ -139,7 +143,11 @@ void main() {
     final ProcessResult result = await buildFlutterApkWithSpecifiedDependencyVersions(
         versions: versionTuple,
         tempDir: tempDir
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     );
     expect(result, const ProcessResultMatcher());
     expect(result.stderr, contains('Please upgrade your Android Gradle Plugin version'));
@@ -159,7 +167,11 @@ void main() {
     final ProcessResult result = await buildFlutterApkWithSpecifiedDependencyVersions(
         versions: versionTuple,
         tempDir: tempDir
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     );
     expect(result, const ProcessResultMatcher());
     expect(result.stderr, contains('Please upgrade your Gradle version'));
@@ -178,7 +190,11 @@ void main() {
     final ProcessResult result = await buildFlutterApkWithSpecifiedDependencyVersions(
         versions: versionTuple,
         tempDir: tempDir
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
     );
 
     expect(result, const ProcessResultMatcher());

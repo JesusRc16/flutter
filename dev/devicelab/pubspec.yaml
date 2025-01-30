@@ -29,7 +29,11 @@ dependencies:
   stack_trace: 1.12.0
   vm_service: 14.3.0
   web: 1.1.0
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
   webkit_inspection_protocol: 1.2.1
   xml: 6.5.0
   standard_message_codec: 0.0.1+4
@@ -87,4 +91,8 @@ dev_dependencies:
 # PUBSPEC CHECKSUM: 677f
 =======
 # PUBSPEC CHECKSUM: 9824
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0

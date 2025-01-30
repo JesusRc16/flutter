@@ -557,7 +557,11 @@ class SelectableRegionState extends State<SelectableRegion> with TextSelectionDe
 =======
           ..onTapTrackStart = _onTapTrackStart
           ..onTapTrackReset = _onTapTrackReset
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
           ..onTapDown = _startNewMouseSelectionGesture
           ..onTapUp = _handleMouseTapUp
           ..onDragStart = _handleMouseDragStart
@@ -583,7 +587,11 @@ class SelectableRegionState extends State<SelectableRegion> with TextSelectionDe
 
   void _onTapTrackReset() {
     _isShiftPressed = false;
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
   }
 
   void _initTouchGestureRecognizer() {
@@ -622,7 +630,11 @@ class SelectableRegionState extends State<SelectableRegion> with TextSelectionDe
           ..onCancel = _clearSelection
 =======
           ..onCancel = clearSelection
+<<<<<<< HEAD
 >>>>>>> c519ee916eaeb88923e67befb89c0f1dabfa83e6
+=======
+>>>>>>> 17025dd88227cd9532c33fa78f5250d548d87e9a
+>>>>>>> abf7f82ced5ecfc95905695a69be7feb0cbe3ca0
           ..dragStartBehavior = DragStartBehavior.down;
       },
     );
